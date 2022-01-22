@@ -13,7 +13,7 @@ db = sqlite3.connect('clicker.db')
 cur = db.cursor()
 clock = pygame.time.Clock()
 autog = 0
-coins = 0
+coins = 10000000
 display_width = 1920
 display_height = 1080
 size = width, height = 1920, 1080
@@ -71,14 +71,12 @@ def DrawText(text, Textcolor, Rectcolor, x, y, fsize):
     gameDisplay.blit(text, textRect)
 
 
-
 def create_particles(position, nado):
     q = random.randint(5, 20)
     particle_count = q
     numbers = range(-5, 6)
     for _ in range(particle_count):
         Particle(position, random.choice(numbers), random.choice(numbers), nado)
-
 
 
 def load_image(name, colorkey=None):
@@ -98,6 +96,7 @@ def load_image(name, colorkey=None):
 
 
 all_sprites = pygame.sprite.Group()
+
 
 class Particle(pygame.sprite.Sprite):
     # сгенерируем частицы разного размера\
@@ -139,6 +138,7 @@ class Particle(pygame.sprite.Sprite):
         # убиваем, если частица ушла за экран
         if not self.rect.colliderect(screen_rect):
             self.kill()
+
 
 def rectangle(display, color, x, y, w, h):
     pygame.draw.rect(display, color, (x, y, w, h))
@@ -204,6 +204,7 @@ def final_screen(clicks):
         pygame.display.flip()
         clock.tick(60)
 
+
 def main_loop():
     global clock
     global autog
@@ -212,6 +213,19 @@ def main_loop():
     global color2
     global color3
     global clicks
+    sprava_first_lvl = ['деДский сад', 'дошик', 'шаверма', 'вода', 'пицца', 'пюрешка', 'чёрный хлеб', 'суси',
+                        'заплесневелый сыр', 'воздух', 'да', 'да', 'да', 'да', 'да']
+    sprava_second_lvl = ['шкИла', 'ролтон', 'шаурма', 'чай', 'пицца с ананасами', 'макарошки', 'нормальный хлеб',
+                         'роллы',
+                         'сыр', 'вакуум', 'нет', 'нет', 'нет', 'нет', 'нет']
+    sprava_third_lvl = ['уник', 'лапша', 'гирос', 'кофеёк', 'пепперони', 'котлетки', 'нарезной хлеб', 'рыбка с икрой',
+                        'президент', 'пространство', 'возможно', 'возможно', 'возможно', 'возможно', 'возможно']
+    sleva_first_lvl = ['хухл', 'мышь', 'клава', 'моник', 'крутая мышь', 'тубаретка', 'подсветка', 'питхон', 'пайчарм',
+                       'яндекс', 'lf', 'lf', 'lf', 'lf', 'lf']
+    sleva_second_lvl = ['ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn',
+                        'ytn', 'ytn']
+    sleva_third_lvl = ['djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj',
+                       'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', ]
     grom = 0.07
     groom = 0.5
     kk = random.randint(0, 1720)
@@ -232,16 +246,16 @@ def main_loop():
     up8 = 2500
     up9 = 5000
     up10 = 8500
-    uup1 = 0.1
-    uup2 = 0.3
-    uup3 = 1
-    uup4 = 3.5
-    uup5 = 15
-    uup6 = 25
-    uup7 = 50
-    uup8 = 100
-    uup9 = 250
-    uup10 = 500
+    uup1 = 1
+    uup2 = 5
+    uup3 = 15
+    uup4 = 50
+    uup5 = 250
+    uup6 = 500
+    uup7 = 1000
+    uup8 = 2500
+    uup9 = 5000
+    uup10 = 8500
     mong = 1
     cost1 = 5
     cost2 = 50
@@ -256,21 +270,21 @@ def main_loop():
     ccost1 = 10
     ccost2 = 100
     ccost3 = 500
-    ccost4 = 5000
-    ccost5 = 20000
-    ccost6 = 50000
-    ccost7 = 100000
-    ccost8 = 200000
-    ccost9 = 500000
-    ccost10 = 1000000
+    ccost4 = 2000
+    ccost5 = 50000
+    ccost6 = 200000
+    ccost7 = 1000000
+    ccost8 = 3000000
+    ccost9 = 6000000
+    ccost10 = 10000000
     ulta = 10000000
     voz = 1
-    nomer = 0
     kart = 0
     bonus = 0
     nado = 0
     udv = 1
     vrem = 400
+    nomer = 0
     global coins
     game_running = True
     while game_running:
@@ -293,10 +307,10 @@ def main_loop():
                     if mopos[0] <= 885 and mopos[1] <= 360:
                         sound1.play()
                         coins += mong * udv * voz
-                        if udv != 2:
-                            create_particles(pygame.mouse.get_pos(), 1)
-                        else:
-                            create_particles(pygame.mouse.get_pos(), 0)
+                        # if udv != 2:
+                        #    create_particles(pygame.mouse.get_pos(), 1)
+                        # else:
+                        #    create_particles(pygame.mouse.get_pos(), 0)
 
                 if mopos[0] <= 1350 and mopos[1] <= 50:
                     if mopos[0] >= 1150 and mopos[1] >= 0:
@@ -420,99 +434,99 @@ def main_loop():
 
                 if mopos[0] >= 130 and mopos[1] >= 60:
                     if mopos[0] <= 330 and mopos[1] <= 110:
-                        if coins >= cсost2:
+                        if coins >= ccost2:
                             sound2.play()
-                            coins = coins - cсost2
-                            cсost2 = cсost2 * 1.4
+                            coins = coins - ccost2
+                            ccost2 = ccost2 * 1.4
                             autog = autog + (uup2 * voz)
-                            cсost2 = round(cсost2, 0)
+                            ccost2 = round(ccost2, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 120:
                     if mopos[0] <= 330 and mopos[1] <= 170:
-                        if coins >= cсost3:
+                        if coins >= ccost3:
                             sound2.play()
-                            coins = coins - cсost3
-                            cсost3 = cсost3 * 1.4
+                            coins = coins - ccost3
+                            ccost3 = ccost3 * 1.4
                             autog = autog + (uup3 * voz)
-                            cсost3 = round(cсost3, 0)
+                            ccost3 = round(ccost3, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 180:
                     if mopos[0] <= 330 and mopos[1] <= 230:
-                        if coins >= cсost4:
+                        if coins >= ccost4:
                             sound2.play()
-                            coins = coins - cсost4
-                            cсost4 = cсost4 * 1.4
+                            coins = coins - ccost4
+                            ccost4 = ccost4 * 1.4
                             autog = autog + (uup4 * voz)
-                            cсost4 = round(cсost4, 0)
+                            ccost4 = round(ccost4, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 240:
                     if mopos[0] <= 330 and mopos[1] <= 290:
-                        if coins >= cсost5:
+                        if coins >= ccost5:
                             sound2.play()
-                            coins = coins - cсost5
-                            cсost5 = cсost5 * 1.4
+                            coins = coins - ccost5
+                            ccost5 = ccost5 * 1.4
                             autog = autog + (uup5 * voz)
-                            cсost5 = round(cсost5, 0)
+                            ccost5 = round(ccost5, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 300:
                     if mopos[0] <= 330 and mopos[1] <= 350:
-                        if coins >= cсost6:
+                        if coins >= ccost6:
                             sound2.play()
-                            coins = coins - cсost6
-                            cсost6 = cсost6 * 1.4
+                            coins = coins - ccost6
+                            ccost6 = ccost6 * 1.4
                             autog = autog + (uup6 * voz)
-                            cсost6 = round(cсost6, 0)
+                            ccost6 = round(ccost6, 0)
                         else:
                             sound3.play()
                 if mopos[0] >= 130 and mopos[1] >= 360:
                     if mopos[0] <= 330 and mopos[1] <= 410:
-                        if coins >= cсost7:
+                        if coins >= ccost7:
                             sound2.play()
-                            coins = coins - cсost7
-                            cсost7 = cсost7 * 1.4
+                            coins = coins - ccost7
+                            ccost7 = ccost7 * 1.4
                             autog = autog + (uup7 * voz)
-                            cсost7 = round(cсost7, 0)
+                            ccost7 = round(ccost7, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 420:
                     if mopos[0] <= 330 and mopos[1] <= 470:
-                        if coins >= cсost8:
+                        if coins >= ccost8:
                             sound2.play()
-                            coins = coins - cсost8
-                            cсost8 = cсost8 * 1.4
+                            coins = coins - ccost8
+                            ccost8 = ccost8 * 1.4
                             autog = autog + (uup8 * voz)
-                            cсost8 = round(cсost8, 0)
+                            ccost8 = round(ccost8, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 480:
                     if mopos[0] <= 330 and mopos[1] <= 530:
-                        if coins >= cсost9:
+                        if coins >= ccost9:
                             sound2.play()
-                            coins = coins - cсost9
-                            cсost9 = cсost9 * 1.4
+                            coins = coins - ccost9
+                            ccost9 = ccost9 * 1.4
                             autog = autog + (uup9 * voz)
-                            cсost9 = round(cсost9, 0)
+                            ccost9 = round(ccost9, 0)
                         else:
                             sound3.play()
 
                 if mopos[0] >= 130 and mopos[1] >= 540:
                     if mopos[0] <= 330 and mopos[1] <= 590:
-                        if coins >= cсost10:
+                        if coins >= ccost10:
                             sound2.play()
-                            coins = coins - cсost10
-                            cсost10 = cсost10 * 1.4
+                            coins = coins - ccost10
+                            ccost10 = ccost10 * 1.4
                             autog = autog + (uup10 * voz)
-                            cсost10 = round(cсost10, 0)
+                            ccost10 = round(ccost10, 0)
                         else:
                             sound3.play()
 
@@ -532,20 +546,19 @@ def main_loop():
                             cost9 = 3000000
                             cost10 = 5000000
                             ccost1 = 10
-                            cсost2 = 100
-                            cсost3 = 500
-                            cсost4 = 5000
-                            cсost5 = 20000
-                            cсost6 = 50000
-                            cсost7 = 100000
-                            cсost8 = 200000
-                            cсost9 = 500000
-                            cсost10 = 1000000
+                            ccost2 = 100
+                            ccost3 = 500
+                            ccost4 = 2000
+                            ccost5 = 50000
+                            ccost6 = 200000
+                            ccost7 = 1000000
+                            ccost8 = 3000000
+                            ccost9 = 6000000
+                            ccost10 = 10000000
                             ulta = ulta * 10
                             autog = 0
-                            coins = 0
                             nomer += 1
-                            coins = 0
+                            coins = 100000000
                             sound4.play()
 
                 if mopos[0] >= 1820 and mopos[1] >= 980:
@@ -612,8 +625,6 @@ def main_loop():
                         sound3.set_volume(groom)
         gameDisplay.fill(blue)
 
-        DrawText(f"Количество кликов: {clicks}", black, light_blue, 150, 1050, 25)
-
         rectangle(gameDisplay, red, 750, 0, 750, 1080)
         rectangle(gameDisplay, green4, 1500, 0, 420, 1080)
         if kart != 2:
@@ -629,7 +640,8 @@ def main_loop():
             bonus = 0
             if vrem == 0:
                 udv = 1
-                vrem = 400
+                vrem = 200
+        DrawText(f"Количество кликов: {clicks}", black, light_blue, 150, 1050, 25)
         if kart == 0:
             rectangle(gameDisplay, black, 1500, 200, 100, 100)
             rectangle(gameDisplay, blue, 1660, 200, 100, 100)
@@ -669,34 +681,23 @@ def main_loop():
         DrawText("Обнуление: " + str(nomer), black, light_blue, 750, 27, 20)
         DrawText(str(int(grom * 100)), black, green4, 1730, 485, 35)
 
-        for i in range(0, 600, 60):
+        for i in range(0, 900, 60):
             rectangle(gameDisplay, blue, 1150, i, 200, 50)
+            
+        t = 0
+        costy = [cost1, cost2, cost3, cost4, cost5, cost6, cost7, cost8, cost9, cost10, 0, 0, 0, 0, 0]
+        ups = [up1, up2, up3, up4, up5, up6, up7, up8, up9, up10, 0, 0, 0, 0, 0]
+        for i in range(27, 927, 60):
+            if nomer == 0:
+                DrawText(f'{sleva_first_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
+            elif nomer == 1:
+                DrawText(f'{sleva_second_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
+            else:
+                DrawText(f'{sleva_third_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
+            DrawText("цена:" + str(int(costy[t])), black, light_blue, 1425, i, 18)
+            t += 1
 
-        DrawText(f"хухл(+{up1 * voz})", black, light_blue, 1045, 27, 20)
-        DrawText(f"мышь(+{up2 * voz})", black, light_blue, 1045, 87, 20)
-        DrawText(f"клава(+{up3 * voz})", black, light_blue, 1045, 147, 20)
-        DrawText(f"моник(+{up4 * voz})", black, light_blue, 1045, 207, 20)
-        DrawText(f"крутая мышь(+{up5 * voz})", black, light_blue, 1045, 267, 20)
-        DrawText(f"тубаретка(+{up6 * voz})", black, light_blue, 1045, 327, 20)
-        DrawText(f"подсветка(+{up7 * voz})", black, light_blue, 1045, 387, 20)
-        DrawText(f"питхон(+{up8 * voz})", black, light_blue, 1045, 443, 20)
-        DrawText(f"пайчарм(+{up9 * voz})", black, light_blue, 1045, 503, 20)
-        DrawText(f"яндекс(+{up10 * voz})", black, light_blue, 1045, 563, 20)
-
-
-
-        DrawText("цена:" + str(int(cost1)), black, light_blue, 1420, 27, 18)
-        DrawText("цена:" + str(int(cost2)), black, light_blue, 1420, 87, 18)
-        DrawText("цена:" + str(int(cost3)), black, light_blue, 1420, 147, 18)
-        DrawText("цена:" + str(cost4), black, light_blue, 1420, 207, 18)
-        DrawText("цена:" + str(cost5), black, light_blue, 1420, 267, 18)
-        DrawText("цена:" + str(cost6), black, light_blue, 1420, 327, 18)
-        DrawText("цена:" + str(cost7), black, light_blue, 1420, 387, 18)
-        DrawText("цена:" + str(cost8), black, light_blue, 1420, 443, 18)
-        DrawText("цена:" + str(cost9), black, light_blue, 1420, 503, 18)
-        DrawText("цена:" + str(cost10), black, light_blue, 1420, 563, 18)
-
-        for i in range(0, 600, 60):
+        for i in range(0, 900, 60):
             rectangle(gameDisplay, red, 145, i, 200, 50)
 
         if kart == 2:
@@ -726,29 +727,18 @@ def main_loop():
             for i in range(0, 600, 60):
                 screen.blit(blocksred, (130, i))
                 screen.blit(blocksblue, (1150, i))
-        DrawText(f"бкм(+{uup1 * voz})", black, light_blue, 492, 27, 20)
-        DrawText(f"еда(+{uup2 * voz})", black, light_blue, 398, 87, 20)
-        DrawText(f"колонки(+{uup3 * voz})", black, light_blue, 411, 147, 20)
-        DrawText(f"наушники(+{uup4 * voz})", black, light_blue, 427, 207, 20)
-        DrawText(f"коврик(+{uup5 * voz})", black, light_blue, 410, 267, 20)
-        DrawText(f"удлиннитель(+{uup6 * voz})", black, light_blue, 440, 327, 20)
-        DrawText(f"кресло(+{uup7 * voz})", black, light_blue, 411, 387, 20)
-        DrawText(f"джойстик(+{uup8 * voz})", black, light_blue, 432, 443, 20)
-        DrawText(f"zcircle(+{uup9 * voz})", black, light_blue, 417, 503, 20)
-        DrawText(f"яндекс.станция(+{uup10 * voz})", black, light_blue, 470, 563, 20)
-
-        ccosty = [ccost1, ccost2]
-        for i in range(7, 627, 60):
-            DrawText("цена:" + str(int(ccost1)), black, light_blue, 95, 27, 18)
-            DrawText("цена:" + str(int(ccost2)), black, light_blue, 70, 87, 18)
-            DrawText("цена:" + str(int(cсost3)), black, light_blue, 70, 147, 18)
-            DrawText("цена:" + str(int(cсost4)), black, light_blue, 70, 207, 18)
-            DrawText("цена:" + str(int(cсost5)), black, light_blue, 70, 267, 18)
-            DrawText("цена:" + str(int(cсost6)), black, light_blue, 70, 327, 18)
-            DrawText("цена:" + str(int(cсost7)), black, light_blue, 70, 387, 18)
-            DrawText("цена:" + str(int(cсost8)), black, light_blue, 70, 447, 18)
-            DrawText("цена:" + str(int(cсost9)), black, light_blue, 70, 507, 18)
-            DrawText("цена:" + str(int(cсost10)), black, light_blue, 70, 567, 18)
+        t = 0
+        ccosty = [ccost1, ccost2, ccost3, ccost4, ccost5, ccost6, ccost7, ccost8, ccost9, ccost10, 0, 0, 0, 0, 0]
+        uups = [uup1, uup2, uup3, uup4, uup5, uup6, uup7, uup8, uup9, uup10, 0, 0, 0, 0, 0]
+        for i in range(27, 927, 60):
+            if nomer == 0:
+                DrawText(f'{sprava_first_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+            elif nomer == 1:
+                DrawText(f'{sprava_second_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+            else:
+                DrawText(f'{sprava_third_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+            DrawText("цена:" + str(int(ccosty[t])), black, light_blue, 73, i, 18)
+            t += 1
 
         if coins >= ulta // 10000:
             rectangle(gameDisplay, green1, 650, 1030, 200, 50)
