@@ -4,16 +4,14 @@ import random
 import pygame
 import time
 import sqlite3
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
+from PyQt5.QtWidgets import QInputDialog
 
 pygame.init()
-
-clicks = 0
 
 db = sqlite3.connect('clicker.db')
 cur = db.cursor()
 clock = pygame.time.Clock()
-autog = 0
-coins = 10000000
 display_width = 1920
 display_height = 1080
 size = width, height = 1920, 1080
@@ -52,6 +50,7 @@ sound4 = pygame.mixer.Sound('game-won.mp3')
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Кликальный клик")
 
+user = ''
 
 def circle(display, color, x, y, radius):
     pygame.draw.circle(display, color, [x, y], radius)
@@ -150,12 +149,13 @@ def terminate():
 
 
 def start_screen():
+    app = QApplication(sys.argv)
+    ex = Example()
     intro_text = ["ВЫ начинаете играть в лучшую игру 22 века", "",
                   "Правила игры:",
                   "Кликай",
                   "И",
                   "Очень много кликай"]
-
     fon = pygame.transform.scale(load_image('menu1.jpg'), (1920, 1080))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
@@ -173,14 +173,36 @@ def start_screen():
         pygame.display.flip()
         clock.tick(60)
 
+def pobeda(clicks):
+    intro_text = ["вы прошли игру",
+                  "вы молодец",
+                  f"для победы вам понадобилось {str(clicks)} кликов"]
 
-def final_screen(clicks):
-    intro_text = ["вы вышли из игры", "",
-                  "за всё время вы сделали",
-                  str(clicks),
+    fon = pygame.transform.scale(load_image('menu1.jpg'), (1920, 1080))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 250
+    for line in intro_text:
+        DrawText(line, black, white, 950, text_coord, 50)
+        text_coord += 50
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                return
+        pygame.display.flip()
+        clock.tick(60)
+
+
+def final_screen(clicks, session):
+    intro_text = ["вы вышли из игры",
+                  "за данный сеанс/всё время вы сделали",
+                  f"{str(session)}/{str(clicks)}",
                   "клик(ов)(а)",
                   "моргенштерн доволен",
-                  "нажмите ЛКМ для выхода",
+                  "нажмите ЛКМ или ПКМ для выхода",
                   "или иную баттен для возврата"]
 
     fon = pygame.transform.scale(load_image('lilmorgen.jfif'), (1920, 1080))
@@ -204,8 +226,31 @@ def final_screen(clicks):
         pygame.display.flip()
         clock.tick(60)
 
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(300, 300, 150, 150)
+        self.setWindowTitle('Диалоговые окна')
+        self.run()
+
+    def run(self):
+        global user
+        name, ok_pressed = QInputDialog.getText(self, "Введите имя",
+                                                "Как тебя зовут?")
+        while name == '':
+            name, ok_pressed = QInputDialog.getText(self, "Введите имя",
+                                                    "Как тебя зовут?")
+        r = cur.execute('select player from users').fetchall()
+        cur.execute('insert into users ("player", "id") values(?, ?)', (name, len(r) + 1))
+        db.commit()
+        user = name
+
 
 def main_loop():
+    global user
     global clock
     global autog
     global ver
@@ -213,19 +258,19 @@ def main_loop():
     global color2
     global color3
     global clicks
-    sprava_first_lvl = ['деДский сад', 'дошик', 'шаверма', 'вода', 'пицца', 'пюрешка', 'чёрный хлеб', 'суси',
-                        'заплесневелый сыр', 'воздух', 'да', 'да', 'да', 'да', 'да']
-    sprava_second_lvl = ['шкИла', 'ролтон', 'шаурма', 'чай', 'пицца с ананасами', 'макарошки', 'нормальный хлеб',
-                         'роллы',
-                         'сыр', 'вакуум', 'нет', 'нет', 'нет', 'нет', 'нет']
-    sprava_third_lvl = ['уник', 'лапша', 'гирос', 'кофеёк', 'пепперони', 'котлетки', 'нарезной хлеб', 'рыбка с икрой',
-                        'президент', 'пространство', 'возможно', 'возможно', 'возможно', 'возможно', 'возможно']
-    sleva_first_lvl = ['хухл', 'мышь', 'клава', 'моник', 'крутая мышь', 'тубаретка', 'подсветка', 'питхон', 'пайчарм',
-                       'яндекс', 'lf', 'lf', 'lf', 'lf', 'lf']
-    sleva_second_lvl = ['ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn', 'ytn',
-                        'ytn', 'ytn']
-    sleva_third_lvl = ['djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj',
-                       'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', 'djpvj;yj', ]
+    sleva_first_lvl = ['деДский сад', 'дошик', 'шаверма', 'вода', 'пицца с ананасами', 'пюрешка', 'чёрный хлеб', 'суси',
+                        'плесневелый сыр', 'мойва', 'паштет', 'виноград', 'овощи', 'нож', 'воздух']
+    sleva_second_lvl = ['шкИла', 'ролтон', 'шаурма', 'чай', 'норм пицца', 'макарошки', 'хороший хлеб',
+                         'роллы', 'сыр', 'красная икра', 'сосисоны', 'сок', 'фрукты', 'ложка', 'вакуум']
+    sleva_third_lvl = ['уник', 'лапша', 'гирос', 'кофеёк', 'пепперони', 'котлетки', 'нарезной хлеб', 'рыбка с икрой',
+                        'президент', 'чёрная икра', 'колбаса', 'вино', 'мясо', 'вилка', 'пространство']
+
+    sprava_first_lvl = ['хухл', 'мышь', 'клава', 'моник', 'крутая мышь', 'тубаретка', 'лампа', 'питхон', 'пучарм',
+                       'консоль', 'сапёр', 'мелки', 'скайп', 'голуби', 'йандикс']
+    sprava_second_lvl = ['мэелру', 'кот', 'кока', 'монитор', 'зачётная мышь', 'стул', 'подсветка', 'питон v.3.9', 'пайчарм', 'цээмдэ', 'пасьянс', 'пэинт', 'зум',
+                        'почтальон', 'яндекс']
+    sprava_third_lvl = ['рамблер', 'собака', 'к$&%', 'прожектор', 'лютая мышь', 'кресло', 'освещение', 'python v.3.9',
+                       'pycharm', 'cmd', 'змейка', 'фотошоп', 'дискорд', 'эл.почта', 'Yandex', ]
     grom = 0.07
     groom = 0.5
     kk = random.randint(0, 1720)
@@ -236,76 +281,79 @@ def main_loop():
     sound2.set_volume(groom)
     sound3.set_volume(groom)
     sound4.set_volume(groom - 0.3)
-    up1 = 1
-    up2 = 5
-    up3 = 15
-    up4 = 50
-    up5 = 250
-    up6 = 500
-    up7 = 1000
-    up8 = 2500
-    up9 = 5000
-    up10 = 8500
-    up11 = 0
-    up12 = 0
-    up13 = 0
-    up14 = 0
-    up15 = 0
-    uup1 = 1
-    uup2 = 5
-    uup3 = 15
-    uup4 = 50
-    uup5 = 250
-    uup6 = 500
-    uup7 = 1000
-    uup8 = 2500
-    uup9 = 5000
-    uup10 = 8500
-    uup11 = 0
-    uup12 = 0
-    uup13 = 0
-    uup14 = 0
-    uup15 = 0
-    mong = 1
-    cost1 = 5
-    cost2 = 50
-    cost3 = 250
-    cost4 = 1000
-    cost5 = 25000
-    cost6 = 100000
-    cost7 = 500000
-    cost8 = 1500000
-    cost9 = 3000000
-    cost10 = 5000000
-    cost11 = 0
-    cost12 = 0
-    cost13 = 0
-    cost14 = 0
-    cost15 = 0
-    ccost1 = 10
-    ccost2 = 100
-    ccost3 = 500
-    ccost4 = 2000
-    ccost5 = 50000
-    ccost6 = 200000
-    ccost7 = 1000000
-    ccost8 = 3000000
-    ccost9 = 6000000
-    ccost10 = 10000000
-    ccost11 = 0
-    ccost12 = 0
-    ccost13 = 0
-    ccost14 = 0
-    ccost15 = 0
-    ulta = 10000000
-    voz = 1
+    clicks_session = 0
+    clicks = cur.execute('select clicks from users where player = ?', (user,)).fetchone()[0]
+    coins = cur.execute('select coins from users where player = ?', (user,)).fetchone()[0]
+    autog = cur.execute('select auto from users where player = ?', (user,)).fetchone()[0]
+    up1 = cur.execute('select up1 from users where player = ?', (user,)).fetchone()[0]
+    up2 = cur.execute('select up2 from users where player = ?', (user,)).fetchone()[0]
+    up3 = cur.execute('select up3 from users where player = ?', (user,)).fetchone()[0]
+    up4 = cur.execute('select up4 from users where player = ?', (user,)).fetchone()[0]
+    up5 = cur.execute('select up5 from users where player = ?', (user,)).fetchone()[0]
+    up6 = cur.execute('select up6 from users where player = ?', (user,)).fetchone()[0]
+    up7 = cur.execute('select up7 from users where player = ?', (user,)).fetchone()[0]
+    up8 = cur.execute('select up8 from users where player = ?', (user,)).fetchone()[0]
+    up9 = cur.execute('select up9 from users where player = ?', (user,)).fetchone()[0]
+    up10 = cur.execute('select up10 from users where player = ?', (user,)).fetchone()[0]
+    up11 = cur.execute('select up11 from users where player = ?', (user,)).fetchone()[0]
+    up12 = cur.execute('select up12 from users where player = ?', (user,)).fetchone()[0]
+    up13 = cur.execute('select up13 from users where player = ?', (user,)).fetchone()[0]
+    up14 = cur.execute('select up14 from users where player = ?', (user,)).fetchone()[0]
+    up15 = cur.execute('select up15 from users where player = ?', (user,)).fetchone()[0]
+    uup1 = cur.execute('select uup1 from users where player = ?', (user,)).fetchone()[0]
+    uup2 = cur.execute('select uup2 from users where player = ?', (user,)).fetchone()[0]
+    uup3 = cur.execute('select uup3 from users where player = ?', (user,)).fetchone()[0]
+    uup4 = cur.execute('select uup4 from users where player = ?', (user,)).fetchone()[0]
+    uup5 = cur.execute('select uup5 from users where player = ?', (user,)).fetchone()[0]
+    uup6 = cur.execute('select uup6 from users where player = ?', (user,)).fetchone()[0]
+    uup7 = cur.execute('select uup7 from users where player = ?', (user,)).fetchone()[0]
+    uup8 = cur.execute('select uup8 from users where player = ?', (user,)).fetchone()[0]
+    uup9 = cur.execute('select uup9 from users where player = ?', (user,)).fetchone()[0]
+    uup10 = cur.execute('select uup10 from users where player = ?', (user,)).fetchone()[0]
+    uup11 = cur.execute('select uup11 from users where player = ?', (user,)).fetchone()[0]
+    uup12 = cur.execute('select uup12 from users where player = ?', (user,)).fetchone()[0]
+    uup13 = cur.execute('select uup13 from users where player = ?', (user,)).fetchone()[0]
+    uup14 = cur.execute('select uup14 from users where player = ?', (user,)).fetchone()[0]
+    uup15 = cur.execute('select uup15 from users where player = ?', (user,)).fetchone()[0]
+    mong = cur.execute('select click from users where player = ?', (user,)).fetchone()[0]
+    cost1 = cur.execute('select cost1 from users where player = ?', (user,)).fetchone()[0]
+    cost2 = cur.execute('select cost2 from users where player = ?', (user,)).fetchone()[0]
+    cost3 = cur.execute('select cost3 from users where player = ?', (user,)).fetchone()[0]
+    cost4 = cur.execute('select cost4 from users where player = ?', (user,)).fetchone()[0]
+    cost5 = cur.execute('select cost5 from users where player = ?', (user,)).fetchone()[0]
+    cost6 = cur.execute('select cost6 from users where player = ?', (user,)).fetchone()[0]
+    cost7 = cur.execute('select cost7 from users where player = ?', (user,)).fetchone()[0]
+    cost8 = cur.execute('select cost8 from users where player = ?', (user,)).fetchone()[0]
+    cost9 = cur.execute('select cost9 from users where player = ?', (user,)).fetchone()[0]
+    cost10 = cur.execute('select cost10 from users where player = ?', (user,)).fetchone()[0]
+    cost11 = cur.execute('select cost11 from users where player = ?', (user,)).fetchone()[0]
+    cost12 = cur.execute('select cost12 from users where player = ?', (user,)).fetchone()[0]
+    cost13 = cur.execute('select cost13 from users where player = ?', (user,)).fetchone()[0]
+    cost14 = cur.execute('select cost14 from users where player = ?', (user,)).fetchone()[0]
+    cost15 = cur.execute('select cost15 from users where player = ?', (user,)).fetchone()[0]
+    ccost1 = cur.execute('select ccost1 from users where player = ?', (user,)).fetchone()[0]
+    ccost2 = cur.execute('select ccost2 from users where player = ?', (user,)).fetchone()[0]
+    ccost3 = cur.execute('select ccost3 from users where player = ?', (user,)).fetchone()[0]
+    ccost4 = cur.execute('select ccost4 from users where player = ?', (user,)).fetchone()[0]
+    ccost5 = cur.execute('select ccost5 from users where player = ?', (user,)).fetchone()[0]
+    ccost6 = cur.execute('select ccost6 from users where player = ?', (user,)).fetchone()[0]
+    ccost7 = cur.execute('select ccost7 from users where player = ?', (user,)).fetchone()[0]
+    ccost8 = cur.execute('select ccost8 from users where player = ?', (user,)).fetchone()[0]
+    ccost9 = cur.execute('select ccost9 from users where player = ?', (user,)).fetchone()[0]
+    ccost10 = cur.execute('select ccost10 from users where player = ?', (user,)).fetchone()[0]
+    ccost11 = cur.execute('select ccost11 from users where player = ?', (user,)).fetchone()[0]
+    ccost12 = cur.execute('select ccost12 from users where player = ?', (user,)).fetchone()[0]
+    ccost13 = cur.execute('select ccost13 from users where player = ?', (user,)).fetchone()[0]
+    ccost14 = cur.execute('select ccost14 from users where player = ?', (user,)).fetchone()[0]
+    ccost15 = cur.execute('select ccost15 from users where player = ?', (user,)).fetchone()[0]
+    ulta = cur.execute('select ulta from users where player = ?', (user,)).fetchone()[0]
+    voz = cur.execute('select voz from users where player = ?', (user,)).fetchone()[0]
     kart = 0
     bonus = 0
     nado = 0
     udv = 1
     vrem = 400
-    nomer = 0
-    global coins
+    nomer = cur.execute('select nomer from users where player = ?', (user,)).fetchone()[0]
     game_running = True
     while game_running:
         for event in pygame.event.get():
@@ -316,7 +364,6 @@ def main_loop():
                 coins = coins + autog
 
             if event.type == pygame.MOUSEBUTTONDOWN and (event.button == 1 or event.button == 3):
-                clicks += 1
 
                 color = gameDisplay.get_at(pygame.mouse.get_pos())
                 mopos = pygame.mouse.get_pos()
@@ -327,9 +374,11 @@ def main_loop():
                     if mopos[0] <= 885 and mopos[1] <= 360:
                         sound1.play()
                         coins += mong * udv * voz
-                        # if udv != 2:
+                        clicks += 1
+                        clicks_session += 1
+                        #if udv != 2:
                         #    create_particles(pygame.mouse.get_pos(), 1)
-                        # else:
+                        #else:
                         #    create_particles(pygame.mouse.get_pos(), 0)
 
                 if mopos[0] <= 1350 and mopos[1] <= 50:
@@ -655,6 +704,9 @@ def main_loop():
                     if mopos[0] >= 650 and mopos[1] >= 830:
                         if coins >= ulta:
                             voz += 0.2
+                            if voz >= 1.5:
+                                pobeda(clicks)
+                                return
                             mong = 1
                             cost1 = 5
                             cost2 = 50
@@ -679,10 +731,82 @@ def main_loop():
                             ulta = ulta * 10
                             autog = 0
                             nomer += 1
-                            coins = 100000000
+                            coins = 0
                             sound4.play()
 
                 if mopos[0] >= 1820 and mopos[1] >= 980:
+                    cur.execute('''update users set clicks = ?,
+                                                    coins = ?,
+                                                    ulta = ?,
+                                                    voz = ?,
+                                                    auto = ?,   
+                                                    click = ?,
+                                                    up1 = ?,
+                                                    up2 = ?,
+                                                    up3 = ?,
+                                                    up4 = ?,
+                                                    up5 = ?,
+                                                    up6 = ?,
+                                                    up7 = ?,
+                                                    up8 = ?,
+                                                    up9 = ?,
+                                                    up10 = ?,
+                                                    up11 = ?,
+                                                    up12 = ?,
+                                                    up13 = ?,
+                                                    up14 = ?,
+                                                    up15 = ?,
+                                                    uup1 = ?,
+                                                    uup2 = ?,
+                                                    uup3 = ?,
+                                                    uup4 = ?,
+                                                    uup5 = ?,
+                                                    uup6 = ?,
+                                                    uup7 = ?,
+                                                    uup8 = ?,
+                                                    uup9 = ?,
+                                                    uup10 = ?,
+                                                    uup11 = ?,
+                                                    uup12 = ?,
+                                                    uup13 = ?,
+                                                    uup14 = ?,
+                                                    uup15 = ?,
+                                                    cost1 = ?,
+                                                    cost2 = ?,
+                                                    cost3 = ?,
+                                                    cost4 = ?,
+                                                    cost5 = ?,
+                                                    cost6 = ?,
+                                                    cost7 = ?,
+                                                    cost8 = ?,
+                                                    cost9 = ?,
+                                                    cost10 = ?,
+                                                    cost11 = ?,
+                                                    cost12 = ?,
+                                                    cost13 = ?,
+                                                    cost14 = ?,
+                                                    cost15 = ?,
+                                                    ccost1 = ?,
+                                                    ccost2 = ?,
+                                                    ccost3 = ?,
+                                                    ccost4 = ?,
+                                                    ccost5 = ?,
+                                                    ccost6 = ?,
+                                                    ccost7 = ?,
+                                                    ccost8 = ?,
+                                                    ccost9 = ?,
+                                                    ccost10 = ?,
+                                                    ccost11 = ?,
+                                                    ccost12 = ?,
+                                                    ccost13 = ?,
+                                                    ccost14 = ?,
+                                                    ccost15 = ? where player = ?''', (clicks, coins, ulta, voz, autog, mong, up1, up2, up3, up4, up5, up6, up7, up8, up9, up10, up11, up12, up13, up14, up15,
+                                                                     uup1, uup2, uup3, uup4, uup5, uup6, uup7, uup8, uup9, uup10, uup11, uup12, uup13, uup14, uup15,
+                                                                     cost1, cost2, cost3, cost4, cost5, cost6, cost7, cost8, cost9, cost10, cost11, cost12, cost13, cost14,
+                                                                     cost15, ccost1, ccost2, ccost3, ccost4, ccost5, ccost6, ccost7, ccost8, ccost9, ccost10, ccost11, ccost12,
+                                                                     ccost13, ccost14, ccost15, user,))
+                    db.commit()
+                    final_screen(clicks, clicks_session)
                     return
 
                 if mopos[0] >= 1500 and mopos[1] >= 200:
@@ -762,7 +886,8 @@ def main_loop():
             if vrem == 0:
                 udv = 1
                 vrem = 200
-        DrawText(f"Количество кликов: {clicks}", black, light_blue, 150, 1050, 25)
+        DrawText(f"Вы - {user}", black, light_blue, 1500, 1050, 25)
+        DrawText(f"Количество кликов: {clicks_session}/{clicks}", black, light_blue, 200, 1050, 25)
         if kart == 0:
             rectangle(gameDisplay, black, 1500, 200, 100, 100)
             rectangle(gameDisplay, blue, 1660, 200, 100, 100)
@@ -814,14 +939,14 @@ def main_loop():
         ups = [up1, up2, up3, up4, up5, up6, up7, up8, up9, up10, up11, up12, up13, up14, up15]
         for i in range(27, 927, 60):
             if nomer == 0:
-                DrawText(f'{sleva_first_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
-                DrawText(f'{sprava_first_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+                DrawText(f'{sleva_first_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 470, i, 20)
+                DrawText(f'{sprava_first_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 1030, i, 20)
             elif nomer == 1:
-                DrawText(f'{sleva_second_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
-                DrawText(f'{sprava_second_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+                DrawText(f'{sleva_second_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 470, i, 20)
+                DrawText(f'{sprava_second_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 1030, i, 20)
             else:
-                DrawText(f'{sleva_third_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 1045, i, 20)
-                DrawText(f'{sprava_third_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 410, i, 20)
+                DrawText(f'{sleva_third_lvl[t]}(+{round(ups[t] * voz, 2)})', black, light_blue, 470, i, 20)
+                DrawText(f'{sprava_third_lvl[t]}(+{round(uups[t] * voz, 2)})', black, light_blue, 1030, i, 20)
             DrawText("цена:" + str(int(costy[t])), black, light_blue, 1425, i, 18)
             DrawText("цена:" + str(int(ccosty[t])), black, light_blue, 73, i, 18)
             t += 1
@@ -885,6 +1010,5 @@ def main_loop():
 
 start_screen()
 main_loop()
-final_screen(clicks)
 pygame.quit()
 quit()
