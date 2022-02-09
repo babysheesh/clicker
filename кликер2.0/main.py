@@ -243,10 +243,13 @@ class Example(QWidget):
         while name == '':
             name, ok_pressed = QInputDialog.getText(self, "Введите имя",
                                                     "Как тебя зовут?")
-        r = cur.execute('select player from users').fetchall()
-        cur.execute('insert into users ("player", "id") values(?, ?)', (name, len(r) + 1))
-        db.commit()
+        r = cur.execute('select player from users where player = ?', (name,)).fetchone()
+        plrs = cur.execute('select player from users').fetchall()
+        if r is None:
+            cur.execute('insert into users ("player", "id") values(?, ?)', (name, len(plrs) + 1))
+            db.commit()
         user = name
+
 
 
 def main_loop():
@@ -376,10 +379,10 @@ def main_loop():
                         coins += mong * udv * voz
                         clicks += 1
                         clicks_session += 1
-                        #if udv != 2:
-                        #    create_particles(pygame.mouse.get_pos(), 1)
-                        #else:
-                        #    create_particles(pygame.mouse.get_pos(), 0)
+                        if udv != 2:
+                            create_particles(pygame.mouse.get_pos(), 1)
+                        else:
+                            create_particles(pygame.mouse.get_pos(), 0)
 
                 if mopos[0] <= 1350 and mopos[1] <= 50:
                     if mopos[0] >= 1150 and mopos[1] >= 0:
