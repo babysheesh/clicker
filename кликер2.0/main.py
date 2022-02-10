@@ -2,7 +2,6 @@ import os
 import sys
 import random
 import pygame
-import time
 import sqlite3
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
 from PyQt5.QtWidgets import QInputDialog
@@ -71,7 +70,7 @@ def DrawText(text, Textcolor, Rectcolor, x, y, fsize):
 
 
 def create_particles(position, nado):
-    q = random.randint(5, 20)
+    q = random.randint(5, 15)
     particle_count = q
     numbers = range(-5, 6)
     for _ in range(particle_count):
@@ -171,7 +170,7 @@ def start_screen():
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return  # начинаем игру
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(90)
 
 def pobeda(clicks):
     intro_text = ["вы прошли игру",
@@ -193,7 +192,7 @@ def pobeda(clicks):
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(90)
 
 
 def final_screen(clicks, session):
@@ -224,7 +223,7 @@ def final_screen(clicks, session):
             elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(90)
 
 class Example(QWidget):
     def __init__(self):
@@ -1008,7 +1007,7 @@ def main_loop():
         all_sprites.update()
         all_sprites.draw(screen)
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(90)
 
 
 start_screen()
